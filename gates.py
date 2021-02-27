@@ -61,29 +61,28 @@ def Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod):
     if n != len(reg2):
         raise Exception("Currently only supports addition of equal bit length")
     try:
-        ctrl = ancil_mod[n+1]#:2*(n+1)]
+        ctrl = ancil_mod[n+1]
     except:
-        raise Exception(f"Not enough ancilla with {len(ancil_mod)} given for {2*(n+1)} required")
+        raise Exception(f"Not enough ancilla with {len(ancil_mod)} given for {n+2} required")
     c = Adder(c, reg1, reg2, ancil, reverse = False)
     c.barrier()
-    #ancil seems to be 0
-    print("Modulo loop: ", end=' ')
-    #for now I am doing in range of n but it should be the commented number, but it would require too many qubits
-    for k in range(n):#int(int('1'*n, 2)/2)):
-        print(f'{k}', end=' ')
-        c = Adder(c, regN, reg2, ancil, reverse = True)
-        c.barrier()
-        c.cx(ancil[0], ctrl[k])
-        c.barrier()
-        for i in range(n):
-            c.ccx(ctrl[k], regN[i], regN_ctrl[i])
-        c.barrier()
-        c = Adder(c, regN_ctrl, reg2, ancil, reverse = False)
-        c.barrier() 
-        #to restore regN_ctrl to 0
-        for i in range(n):
-            c.ccx(ctrl[k], regN[i], regN_ctrl[i])  
-    print('\n')
+    c = Adder(c, regN, reg2, ancil, reverse = True)
+    c.barrier()
+    c.cx(ancil[0], ctrl)
+    c.barrier()
+    for i in range(n):
+        c.ccx(ctrl, regN[i], regN_ctrl[i])
+    c.barrier()
+    c = Adder(c, regN_ctrl, reg2, ancil, reverse = False)
+    c.barrier() 
+    #to restore regN_ctrl to 0
+    for i in range(n):
+        c.ccx(ctrl, regN[i], regN_ctrl[i])
+    c = Adder(c, reg1, reg2, ancil, reverse=True)
+    c.cx(ancil[0], ctrl)
+    c = Adder(c, reg1, reg2, ancil, reverse=False)
+    c.x(ctrl) #otherwise left to one
+
     return c
 
 def Ctrl_zero(c, ctrl, regN, regN_ctrl):

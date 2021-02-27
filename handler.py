@@ -34,5 +34,7 @@ def size(nb_list):
     ls = []
     if nb_list[-1] == 1:
         raise Exception('1 is not supported as trivial result')
+    if not (nb_list[1] < nb_list[-1] or 0 <= nb_list[0]):
+        raise Exception('The scheme restrains 0 <= a and b < N')
     n = len(np.base_repr(max(nb_list + [nb_list[0]+nb_list[1]])))
     return nb_list + [n]
