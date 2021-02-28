@@ -95,6 +95,28 @@ def Ctrl_zero(c, ctrl, regN, regN_ctrl):
         c.ccx(ctrl, regN[i], regN_ctrl[i])
     return c
     
+def Ctrl_mod(c, regx, reg1, reg2, regN, regN_ctrl, ancil_ctrl):
+    n = len(regx)
+    ancil_mod = ancil_ctrl[0:n+2]
+    if n != len(reg2):
+        raise Exception("Currently only supports addition of equal bit length")
+    try:
+        ctrl = ancil_ctrl[n+2]
+    except:
+        raise Exception(f"Not enough ancilla with {len(ancil_ctrl)} given for {n+3} required")
+
+    for i in range(0, n):
+        ls = list(range(0, n))
+        ls.pop(i - 1)
+        for j in ls:
+            c.ccx(ctrl, regx[i], reg1[j])
+            c = Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod)
+            c.ccx(ctrl, regx[i], reg1[j])
+    c.x(ctrl)
+    for i in range(n):
+        c.ccx(ctrl, regx[i], reg2[i])
+    c.x(ctrl)
+    return c
     
 
     
