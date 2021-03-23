@@ -25,8 +25,8 @@ def Carry(c, idx, reverse = False):
     else:
         c.ccx(idx[0],idx[2],idx[3])
         c.cx(idx[1],idx[2])
-        c.ccx(idx[1],idx[2],idx[3])        
-#     c.barrier()
+        c.ccx(idx[1],idx[2],idx[3])      
+    c.to_gate(label="Carry")
     return c
 
 def Sum(c, idx, reverse = False):
@@ -51,7 +51,8 @@ def Sum(c, idx, reverse = False):
         c.cx(idx[0], idx[2])
     else:
         c.cx(idx[0], idx[2])
-        c.cx(idx[1], idx[2])        
+        c.cx(idx[1], idx[2])    
+    c.to_gate(label="Sum")
     return c
 
 def Adder(c, reg1, reg2, ancil_adder, reverse = False):
@@ -98,6 +99,7 @@ def Adder(c, reg1, reg2, ancil_adder, reverse = False):
         c.cx(reg1[0], reg2[0])
         for i in range(n):
             c = Carry(c, [ancil[i+1], reg1[i], reg2[i], ancil[i]], reverse=True) 
+    c.to_gate(label="Adder")
     return c
 
 def Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod, reverse=False):
@@ -134,16 +136,11 @@ def Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod, reverse=False):
     
     if not reverse:
         c = Adder(c, reg1, reg2, ancil, reverse = False)
-        c.barrier()
         c = Adder(c, regN, reg2, ancil, reverse = True)
-        c.barrier()
         c.cx(ancil[0], ctrl)
-        c.barrier()
         for i in range(n):
             c.ccx(ctrl, regN[i], regN_ctrl[i])
-        c.barrier()
         c = Adder(c, regN_ctrl, reg2, ancil, reverse = False)
-        c.barrier() 
         #to restore regN_ctrl to 0
         for i in range(n):
             c.ccx(ctrl, regN[i], regN_ctrl[i])
@@ -166,6 +163,7 @@ def Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod, reverse=False):
         c.cx(ancil[0], ctrl)
         c = Adder(c, regN, reg2, ancil, reverse = False)
         c = Adder(c, reg1, reg2, ancil, reverse = True)
+    c.to_gate(label="Adder mod")
     return c
 
     
@@ -225,7 +223,8 @@ def Mult_mod(c, regx, reg1, ctrl, reg2, regN, regN_ctrl, ancil_ctrl, reverse=Fal
             for j in ls:
                 c.ccx(ctrl, regx[i], reg1[j])
                 c = Adder_mod(c, reg1, reg2, regN, regN_ctrl, ancil_mod, reverse=True)
-                c.ccx(ctrl, regx[i], reg1[j])        
+                c.ccx(ctrl, regx[i], reg1[j])  
+    c.to_gate(label="Mult mod")
     return c
     
 
@@ -235,6 +234,7 @@ def Exp_mod(c, regx, reg1, regX, reg2, regN, regN_ctrl, ancil_ctrl):
     for i in range(n):
         c = Ctrl_mod(c, regx, reg1, regX[i], reg2, regN, regN_ctrl, ancil_ctrl, reverse=False)
         c = Ctrl_mod(c, reg1, regx, regX[i], reg2, regN, regN_ctrl, ancil_ctrl, reverse=True)
+    c.to_gate(label="Exp mod")
     return c
     
 
