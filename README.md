@@ -16,4 +16,4 @@ Run pytest
 Use a jupyter script to try the functions
 
 ## Visualization on Binder
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxhant/shor_algorithm_qiskit/HEAD?filepath=https%3A%2F%2Fgithub.com%2Fmaxhant%2Fshor_algorithm_qiskit%2Fblob%2Fmain%2FProject_visualization.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/maxhant/shor_algorithm_qiskit/main)
