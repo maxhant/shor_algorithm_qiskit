@@ -23,15 +23,15 @@ def test_Carry():
         carr = 1
     else:
         carr = 0
-    print(f"Random inputs: the carry is {c1}, and the two added bits are {n1} and {n2}. \nThe expected outputs are {(n1+n2+c1)%2} with a carry {carr}")
     c = Carry(c, qubits)
     c.measure_all()
     job = q.execute(c, backend=backend, shots=1)
     out = job.result().get_counts(c)
-    print(f"Binary output from the quantum computer: {out}")
     out = list(out)[0]
-    print(f"The sum of the two digits is {out[1]} with a carry of {out[0]}.")
-    return c
+    assert (n1+n2+c1)%2 == int(out[1])
+    assert carr == int(out[0])
+    assert c1 == int(out[3])
+    assert n1 == int(out[2])
 
 def test_Sum():
     c = q.QuantumCircuit()
@@ -39,30 +39,25 @@ def test_Sum():
     c.add_register(qubits)
     c1 = np.random.randint(2)
     n1 = np.random.randint(2)
-#     n2 = np.random.randint(2)
     if c1 == 1:
         c.x(qubits[0])
     if n1 == 1:
         c.x(qubits[1])
-#     if n2 == 1:
-#         c.x(qubits[2])
-    print(f"Random inputs: the two qubits are {c1} and {n1}. \nThe expected result is {(c1+n1)%2}.") #The random input carry is {c1}, 
     c = Sum(c, qubits)
     c.measure_all()
     job = q.execute(c, backend=backend, shots=1)
     out = job.result().get_counts(c)
-    print(f"Binary output from the quantum computer: {out}")
     out = list(out)[0]
-    print(f"The sum of the two digits is {out[0]}.")
-    return c
+    assert c1 + n1 == int(out[0])
+    assert c1 == int(out[2])
+    assert n1 == int(out[1])
+    
 
 def test_Adder():
     n = 4
     nb_max = int('1'*n, 2)
-    
     n1 = np.random.randint(1, int(nb_max/2))
     n2 = np.random.randint(1, int(nb_max/2))
-    print(f"Random inputs: the two summed numbers are {n1} and {n2}. \nThe expected output is {n1+n2}.")
     c = q.QuantumCircuit()
     reg1, c = nb_to_reg(n1, c, name="a_{reg}", size=n)
     reg2, c = nb_to_reg(n2, c, name="b_{reg}", size=n)
@@ -75,9 +70,7 @@ def test_Adder():
     c.measure_all()
     job = q.execute(c, backend=backend, shots=1)
     out = job.result().get_counts(c)
-    print(f"Binary output from the quantum computer: {out}")
     vals = keys_to_nb(out, size=n, nb_keys = 2)
-    print(f"In base 10, the output is {vals[1]} and {vals[0]}")
     assert n1 + n2 == vals[1]
     assert n1 == vals[0]
     assert n*'0' == vals[2][1:]
@@ -85,7 +78,7 @@ def test_Adder():
         assert '1' == vals[2][0]
     else:
         assert '0' == vals[2][0]
-    return c
+
 
 def test_Adder_r():
     n = 4
@@ -106,18 +99,13 @@ def test_Adder_r():
     vals = keys_to_nb(out, size=n, nb_keys=2)
     assert n2 - n1 == vals[1]
     assert n1 == vals[0]
-    assert n*'0' == vals[2][1:]
-#     if n1+n2>=nb_max:
-#         assert '1' == vals[2][0]
-#     else:
-#         assert '0' == vals[2][0]    
+    assert n*'0' == vals[2][1:] 
     
 def test_Adder_mod():
     n = 4
     nb_max = int('1'*n, 2)
     n1, N, n = size([np.random.randint(1, int(nb_max/2)), np.random.randint(2, int(nb_max))])
     n2 = np.random.randint(1, N)
-    print(f"Random inputs: the two summed numbers are {n1} and {n2} and the modulo is {N}. \nThe expected output is {(n1+n2)%N}.")
     c = q.QuantumCircuit()  
     reg1, c = nb_to_reg(n1, c, name="a_{reg}", size=n)
     reg2, c = nb_to_reg(n2, c, name="b_{reg}", size=n)
@@ -132,15 +120,12 @@ def test_Adder_mod():
     c.measure_all()
     job = q.execute(c, backend=backend, shots=1)
     out = job.result().get_counts(c)
-    print(f"Binary output from the quantum computer: {out}")
     vals = keys_to_nb(out, size=n, nb_keys = 4)
-    print(f"In base 10, the main output is {vals[1]}.") 
     assert (n2+n1)%N == vals[1]
     assert n1 == vals[0]
     assert N == vals[2]
     assert 0 == vals[3]
     assert (n+2)*'0' == vals[4]
-    return c
     
 def test_Adder_mod_r():
     n = 4
@@ -198,8 +183,5 @@ def test_Mult_mod():
     c.measure_all()
     job = q.execute(c, backend=backend, shots=1)
     out = job.result().get_counts(c)
-    print(keys_to_nb(out, size=n, nb_keys=4))
-    print(out)
-    # print((a**x)%N)
-    print((x*7)%N)
-    return c
+    vals = keys_to_nb(out, size=n, nb_keys=4)
+    assert True
