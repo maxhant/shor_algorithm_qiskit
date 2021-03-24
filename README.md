@@ -8,7 +8,8 @@ Therefore, it can serve as a basis for other quantum computer's API by simply re
 ## Requirements
 numpy
 qiskit
-(pytest)
+pytest
+matplotlib
 
 ## Installation
 Clone 
