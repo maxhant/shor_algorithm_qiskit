@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shor-qiskit"
+version = "1.0.0"
+description = "Shor's algorithm in Qiskit, built gate by gate on Vedral, Barenco & Ekert's reversible arithmetic"
+readme = "README.md"
+authors = [{ name = "Maxime Hantute" }]
+requires-python = ">=3.10"
+dependencies = [
+    "qiskit>=2.0",
+    "qiskit-aer>=0.17",
+]
+
+[project.optional-dependencies]
+notebook = ["matplotlib", "pylatexenc", "jupyter"]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["shor_qiskit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
